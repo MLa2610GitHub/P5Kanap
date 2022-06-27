@@ -1,5 +1,5 @@
 /* Quand on clique sur un des canapés de la page d'accueil, 
-une fiche produit s'ouvre présentant une photo et des infos */
+une fiche produit s'ouvre présentant une photo et des infos sur le produit */
 
 // RECUPERATION DES INFOS POUR CHAQUE CANAPE
 
@@ -115,6 +115,7 @@ btnAddToCart.addEventListener("click", (e) => {
 
   addArticle();
 }); /////// Fermeture de btnAddToCart.addEventListener
+
 
 // TECHNIQUES ALTERNATIVES POUR RECUPERER LES INFOS
 
