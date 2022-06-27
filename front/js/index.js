@@ -1,3 +1,5 @@
+/*INSERER LES PRODUITS DANS LA PAGE D'ACCUEIL
+
 console.log("connecté");
 
 /* Requêter l'API avec une fonction async await pour récupérer les infos */
