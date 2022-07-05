@@ -1,3 +1,4 @@
+
 /*INSERER LES PRODUITS DANS LA PAGE D'ACCUEIL
 
 console.log("connecté");

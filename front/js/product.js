@@ -1,3 +1,5 @@
+/*FAIRE LE LIEN ENTRE UN PRODUIT DE LA PAGE D'ACCUEIL ET LA PAGE PRODUIT
+
 /* Quand on clique sur un des canapés de la page d'accueil, 
 une fiche produit s'ouvre présentant une photo et des infos sur le produit */
 
@@ -12,17 +14,22 @@ const recupUrl = window.location.href;
 /* Le constructeur URL() renvoie un nouvel objet URL représentant l'URL définie par les paramètres */
 const url = new URL(recupUrl);
 
-//Récupération de l'id
+//RECUPERER L'ID DU PRODUIT A AFFICHER
 const id = url.searchParams.get("id");
 
-//Sélection des différents emplacements dont on a besoin
+//INSERER UN PRODUIT ET SES DETAILS DANS LA PAGE PRODUIT
+
+//Sélection des différents éléments dont on a besoin
 let imgItem = document.querySelector(".item__img");
 let img = document.createElement("img");
 imgItem.appendChild(img);
+
 let titleItem = document.getElementById("title");
 
 let priceItem = document.getElementById("price");
+
 let descriptionItem = document.getElementById("description");
+
 let colorsItem = document.getElementById("colors");
 
 /* Récupération des infos pour chaque item avec l'id via une fonction async/await */
@@ -39,7 +46,8 @@ async function getArticle(idProduct) {
   priceItem.innerHTML = item.price;
   descriptionItem.innerHTML = item.description;
 
-  /* L'instruction for...of permet de créer une boucle Array pour parcourir les valeurs des propriétés (ici les différents coloris de la propriété colors) */
+  /* L'instruction for...of crée
+   une boucle Array pour parcourir les valeurs des propriétés (ici les différents coloris de la propriété colors qui sont stockés dans un tableau) */
   /* Création d'un nouveau noeud dans le DOM pour les ajouter */
 
   for (const color of item.colors) {
@@ -76,6 +84,9 @@ function recuperationBasket() {
 }
 
 //AJOUT D'UN PRODUIT AU PANIER SANS SUPPRIMER L'ANCIEN
+
+let basketObject = recuperationBasket();
+
 function addArticle() {
   console.log("test addBasket");
 
@@ -112,10 +123,14 @@ btnAddToCart.addEventListener("click", (e) => {
   //On empêche le rafraîchissement de la page
   e.preventDefault();
   console.log("item ajouté ! ");
+  window.location.assign("cart.html");
 
   addArticle();
 }); /////// Fermeture de btnAddToCart.addEventListener
 
+export { getArticle };
+export { recuperationBasket };
+export { addArticle };
 
 // TECHNIQUES ALTERNATIVES POUR RECUPERER LES INFOS
 
