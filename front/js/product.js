@@ -3,7 +3,7 @@
 /* Quand on clique sur un des canapés de la page d'accueil, 
 une fiche produit s'ouvre présentant une photo et des infos sur le produit */
 
-// RECUPERATION DES INFOS POUR CHAQUE CANAPE
+// RECUPERATION DES INFOS POUR UN CANAPE
 
 console.log(window.location.href);
 //retourne une adresse web personnalisée
@@ -32,7 +32,7 @@ let descriptionItem = document.getElementById("description");
 
 let colorsItem = document.getElementById("colors");
 
-/* Récupération des infos pour chaque item avec l'id via une fonction async/await */
+/* Récupération des infos pour chaque canapé avec l'id via une fonction async/await */
 /* affichage d'une fiche produit pour chaque canapé */
 
 async function getArticle(idProduct) {
@@ -74,7 +74,7 @@ function recuperationBasket() {
   // Récupération des valeurs stockées dans localStorage
   //On redonne aux valeurs leur format d'origine (cad object)
 
-  let panier = localStorage.getItem("details");
+  let panier = localStorage.getItem("basket");
 
   if (panier) {
     return JSON.parse(panier);
@@ -110,11 +110,11 @@ function addArticle() {
   if (productFound) {
     productFound.nombreItems = productFound.nombreItems + product.nombreItems;
 
-    localStorage.setItem("details", JSON.stringify(basketObject));
+    localStorage.setItem("basket", JSON.stringify(basketObject));
     return;
   }
   basketObject.push(product);
-  localStorage.setItem("details", JSON.stringify(basketObject));
+  localStorage.setItem("basket", JSON.stringify(basketObject));
 }
 
 //Détection des clics sur le panier
@@ -127,28 +127,3 @@ btnAddToCart.addEventListener("click", (e) => {
 
   addArticle();
 }); /////// Fermeture de btnAddToCart.addEventListener
-
-export { getArticle };
-export { recuperationBasket };
-export { addArticle };
-
-// TECHNIQUES ALTERNATIVES POUR RECUPERER LES INFOS
-
-/* await fetch("http://localhost:3000/api/products/" + id)
-  .then((response) => response.json())
-  .then((item) => {
-    img.setAttribute("src", item.imageUrl);
-    img.setAttribute("alt", item.altTxt);
-    titleItem.innerHTML = item.name;
-    priceItem.innerHTML = item.price;
-    descriptionItem.innerHTML = item.description; */
-
-/* Création d'une boucle pour parcourir le tableau des différents coloris */
-/* Création d'un nouveau noeud dans le DOM pour les ajouter 
-    for (let i = 0; i < item.colors.length; i++) {
-      let color = document.createElement("option");
-      color.setAttribute("value", item.colors[i]);
-      color.innerHTML = item.colors[i];
-      colorsItem.appendChild(color);
-    }
-  }); */

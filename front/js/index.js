@@ -3,15 +3,15 @@
 
 console.log("connecté");
 
-/* Requêter l'API avec une fonction async await pour récupérer les infos */
+/* Requêter l'API avec une fonction async await pour récupérer les infos de tous les canapés */
 
 async function getResponse() {
-  const reponseJSON = await fetch("http://localhost:3000/api/products");
+  const responseJSON = await fetch("http://localhost:3000/api/products");
   //promesse et attente de réponse
 
-  const reponse = await reponseJSON.json();
-  console.log(reponse, "objet Javascript");
-  return reponse;
+  const response = await responseJSON.json();
+  console.log(response, "objet Javascript");
+  return response;
 }
 
 async function loading() {
