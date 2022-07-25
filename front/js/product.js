@@ -3,7 +3,7 @@
 /* Quand on clique sur un des canapés de la page d'accueil, 
 une fiche produit s'ouvre présentant une photo et des infos sur le produit */
 
-// RECUPERATION DES INFOS POUR UN CANAPE
+// RECUPERATION DE L'ID POUR AFFICHER UN CANAPE
 
 console.log(window.location.href);
 //retourne une adresse web personnalisée
@@ -14,8 +14,15 @@ const recupUrl = window.location.href;
 /* Le constructeur URL() renvoie un nouvel objet URL représentant l'URL définie par les paramètres */
 const url = new URL(recupUrl);
 
-//RECUPERER L'ID DU PRODUIT A AFFICHER
+//ON RECUPERE L'ID DU PRODUIT A AFFICHER
 const id = url.searchParams.get("id");
+
+//ENREGISTRER UN PANIER DANS LOCAL STORAGE
+function saveBasket(basket) {
+  localStorage.setItem("basket", JSON.stringify(basket));
+}
+/*On ne peut pas enregistrer tableaux et objets dans LS.
+On transforme les données en chaîne de caracteres */
 
 //INSERER UN PRODUIT ET SES DETAILS DANS LA PAGE PRODUIT
 
@@ -32,7 +39,7 @@ let descriptionItem = document.getElementById("description");
 
 let colorsItem = document.getElementById("colors");
 
-/* Récupération des infos pour chaque canapé avec l'id via une fonction async/await */
+/* Récupération des infos pour chaque canapé différent avec l'id via une fonction async/await */
 /* affichage d'une fiche produit pour chaque canapé */
 
 async function getArticle(idProduct) {
@@ -63,58 +70,52 @@ getArticle(id).then();
 //AJOUTER DES PRODUITS DANS LE PANIER
 
 /* On sélectionne les éléments nécessaires : le bouton 'Ajouter au panier', le nombre d'articles et la couleur choisie. 
-Les variables colorsItem et id ont déjà été définies */
+Les variables colorsItem et id sont déjà définies */
 
 let btnAddToCart = document.getElementById("addToCart");
-let nombreItems = document.getElementById("quantity");
+let quantity = document.getElementById("quantity");
 let colorSelected = document.getElementById("colors");
 
-function recuperationBasket() {
-  console.log("fonction lancée");
-  // Récupération des valeurs stockées dans localStorage
-  //On redonne aux valeurs leur format d'origine (cad object)
+// RECUPERATION DES VALEURS DANS LOCAL STORAGE
+function getBasket() {
+  let basket = localStorage.getItem("basket");
 
-  let panier = localStorage.getItem("basket");
-
-  if (panier) {
-    return JSON.parse(panier);
-  } else {
+  if (basket == null) {
+    //Si le panier n'existe pas
     return [];
+  } else {
+    return JSON.parse(basket);
+    //On redonne aux valeurs le format object
   }
 }
 
 //AJOUT D'UN PRODUIT AU PANIER SANS SUPPRIMER L'ANCIEN
 
-let basketObject = recuperationBasket();
-
 function addArticle() {
-  console.log("test addBasket");
+  let basket = getBasket();
 
-  /* Récupération des choix du client dans une variable (ici un objet contenu dans un tableau)  */
+  // Récupération des choix du client dans une variable
   const product = {
     id: id,
     color: colorSelected.value,
-    nombreItems: parseInt(nombreItems.value),
+    quantity: parseInt(quantity.value),
   };
-
-  /* On récupère le panier qui existe dans localStorage en réutilisant la fonction recuperationBasket */
-  let basketObject = recuperationBasket();
 
   // on gère la quantité ajoutée avec la méthode find
   /* On cherche dans le panier s'il y a un produit (p) dont l'id (p.id) est égal à l'id et à la couleur du produit qu'on veut ajouter (product.id). Si find ne trouve rien, il retourne 'undefined' */
 
-  const productFound = basketObject.find(
+  let foundProduct = basket.find(
     (p) => p.id == product.id && p.color == product.color
   );
 
-  if (productFound) {
-    productFound.nombreItems = productFound.nombreItems + product.nombreItems;
+  if (foundProduct) {
+    foundProduct.quantity = foundProduct.quantity + product.quantity;
 
-    localStorage.setItem("basket", JSON.stringify(basketObject));
+    saveBasket(basket);
     return;
   }
-  basketObject.push(product);
-  localStorage.setItem("basket", JSON.stringify(basketObject));
+  basket.push(product);
+  saveBasket(basket);
 }
 
 //Détection des clics sur le panier
