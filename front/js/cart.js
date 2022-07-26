@@ -274,7 +274,6 @@ document.querySelector("#email").addEventListener("change", () => {
 //ENVOI DES DONNEES DU FORMULAIRE AU SERVEUR
 
 //Ecoute d'événement sur le bouton Commander
-const order = document.querySelector("#order");
 order.addEventListener("click", (event) => {
   event.preventDefault();
 
@@ -287,45 +286,36 @@ order.addEventListener("click", (event) => {
     email: document.getElementById("email").value,
   };
 
-  //Stockage des données client dans localStorage
   localStorage.setItem("dataClient", JSON.stringify(dataClient));
+
+  console.log(dataClient);
 
   /*construction d'un tableau pour stocker les produits qui sont dans le localStorage */
   let orderResult = [];
 
+  //Création d'une boucle pour parcourir le tableau
   basket.forEach((item) => {
     orderResult.push(item.id);
   });
 
+  console.log(orderResult);
+
   /*Création d'un objet qui regroupe les valeurs du formulaire et les produits stockés dans dans le localStorage */
 
-  const dataFormulaire = {
-    dataClient,
-    orderResult,
-  };
+  let dataFormulaire = { dataClient, orderResult };
 
   //Envoi du formulaire au serveur avec la méthode POST
+  console.log("depart de la requete");
 
-  async function sendData(dataFormulaire) {
-    fetch("http://localhost:3000/api/products/" + order, {
-      method: "POST",
+  fetch("http://localhost:3000/api/products/order", {
+    method: "POST",
 
-      headers: {
-        "Content-Type": "application/json",
+    headers: { "Content-Type": "application/json" },
 
-        body: JSON.stringify(dataFormulaire),
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        let orderId = data.orderId;
-        window.location.assign("confirmation.html?id=" + orderId);
-      })
-      .catch((error) => {
-        console.log("Une erreur est survenue", error);
-      });
-    return data;
-  }
-
-  sendData(dataFormulaire);
+    body: JSON.stringify(dataFormulaire)
+  }).then(res => {
+    console.log("reponse complete", res);
+});
+    window.location.assign("confirmation.html?id=" + dataClient);
+  
 });
