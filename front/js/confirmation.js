@@ -1,23 +1,9 @@
-//EFFECTUER UNE REQUETE POST SUR L'API 
+//ON RECUPERE L'ID DU PRODUIT A AFFICHER
+let idOrder = new URL(window.location.href).searchParams.get("id");
 
-fetch("http://localhost:3000/api/products/order", {
-	        method: "POST",
-	        body: JSON.stringify(order),
-	        headers: {
-	          "Accept": "application/json",
-	          'Content-Type': 'application/json'
-	        },
-	      })
+//AFFICHER LE NUMERO DE COMMANDE
+let orderId = document.getElementById("orderId");
+orderId.textContent = idOrder;
 
-   //RECUPERER L'IDENTIFIANT DE COMMANDE       
-	        .then((res) => res.json())
-	        .then((data) => {
-	          let orderId = data.orderId;
-	          window.location.assign("confirmation.html?id=" + orderId)
-	
-	        });
-	       
-	//AFFICHER LE NUMERO DE COMMANDE
-    let orderId = document.getElementById("orderId");
-    orderId.textContent = idOrder;
-    console.log(orderId);
+console.log(idOrder);
+console.log(orderId);

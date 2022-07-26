@@ -1,4 +1,4 @@
-/* COMMENT AFFICHER UN TABLEAU RECAPITULATIF DES ACHATS DANS LA PAGE PANIER*/
+/* COMMENT AFFICHER UN TABLEAU RECAPITULATIF DES ACHATS DANS LA   PAGE PANIER*/
 console.log("connecté");
 
 //FONCTIONS
@@ -140,27 +140,27 @@ for (let item of basket) {
 
     // MODIFIER LA QUANTITE D'UN PRODUIT DANS LE PANIER
 
-   function changeQuantity() {
-     let itemQuantityModification = document.querySelectorAll(".itemQuantity");
-     for (let i = 0; i < itemQuantityModification.length; i++) {
-       itemQuantityModification[i].addEventListener("change", (event) => {
-         event.preventDefault();
+    function changeQuantity() {
+      let itemQuantityModification = document.querySelectorAll(".itemQuantity");
+      for (let i = 0; i < itemQuantityModification.length; i++) {
+        itemQuantityModification[i].addEventListener("change", (event) => {
+          event.preventDefault();
 
-         //Sélection de l'élément à modifier en fonction de son id et de sa couleur
-         let itemQuantityModified = basket[i].quantity;
-         let itemQuantityNewValue = itemQuantityModification[i].valueAsNumber;
+          //Sélection de l'élément à modifier en fonction de son id et de sa couleur
+          let itemQuantityModified = basket[i].quantity;
+          let itemQuantityNewValue = itemQuantityModification[i].valueAsNumber;
 
-         let resultModified = basket.filter(
-           (p) => p.itemQuantityNewValue !== itemQuantityModified
-         );
-         resultModified.quantity = itemQuantityNewValue;
-         basket[i].quantity = resultModified.quantity;
-         saveBasket(basket);
-         location.reload(); // recharger la  page
-         alert("Le contenu de votre panier va être modifié");
-       }); //fin addEventListener
-     }
-   }
+          let resultModified = basket.filter(
+            (p) => p.itemQuantityNewValue !== itemQuantityModified
+          );
+          resultModified.quantity = itemQuantityNewValue;
+          basket[i].quantity = resultModified.quantity;
+          saveBasket(basket);
+          location.reload(); // recharger la  page
+          alert("Le contenu de votre panier va être modifié");
+        }); //fin addEventListener
+      }
+    }
 
     changeQuantity();
 
@@ -190,7 +190,7 @@ for (let item of basket) {
 
     removeFromBasket();
 
-    //AFFICHAGE DU NOMBRE TOTAL D'ARTICLES DANS LE PANIER 
+    //AFFICHAGE DU NOMBRE TOTAL D'ARTICLES DANS LE PANIER
 
     let totalItem = document.querySelector("#totalQuantity");
     totalItem.innerHTML = getNumberProduct();
@@ -271,19 +271,61 @@ document.querySelector("#email").addEventListener("change", () => {
   }
 });
 
+//ENVOI DES DONNEES DU FORMULAIRE AU SERVEUR
+
 //Ecoute d'événement sur le bouton Commander
-document.querySelector("#order").addEventListener("click", (event) => {
+const order = document.querySelector("#order");
+order.addEventListener("click", (event) => {
   event.preventDefault();
 
   // Récuperation du contenu du formulaire
   let dataClient = {
-    firstName: firstName.value,
-    lastName: lastName.value,
-    address: address.value,
-    city: city.value,
-    email: email.value,
+    firstName: document.getElementById("firstName").value,
+    lastName: document.getElementById("lastName").value,
+    address: document.getElementById("address").value,
+    city: document.getElementById("city").value,
+    email: document.getElementById("email").value,
   };
 
-  // Récupération des infos du client dans localStorage
+  //Stockage des données client dans localStorage
   localStorage.setItem("dataClient", JSON.stringify(dataClient));
+
+  /*construction d'un tableau pour stocker les produits qui sont dans le localStorage */
+  let orderResult = [];
+
+  basket.forEach((item) => {
+    orderResult.push(item.id);
+  });
+
+  /*Création d'un objet qui regroupe les valeurs du formulaire et les produits stockés dans dans le localStorage */
+
+  const dataFormulaire = {
+    dataClient,
+    orderResult,
+  };
+
+  //Envoi du formulaire au serveur avec la méthode POST
+
+  async function sendData(dataFormulaire) {
+    fetch("http://localhost:3000/api/products/" + order, {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+
+        body: JSON.stringify(dataFormulaire),
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        let orderId = data.orderId;
+        window.location.assign("confirmation.html?id=" + orderId);
+      })
+      .catch((error) => {
+        console.log("Une erreur est survenue", error);
+      });
+    return data;
+  }
+
+  sendData(dataFormulaire);
 });
