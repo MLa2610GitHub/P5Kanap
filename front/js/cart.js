@@ -1,47 +1,62 @@
 /* COMMENT AFFICHER UN TABLEAU RECAPITULATIF DES ACHATS DANS LA   PAGE PANIER*/
 console.log("connecté");
 
-//FONCTIONS
+// Requêter l'API
 
-// Enregistrer un panier dans localStorage
-function saveBasket(basket) {
-  localStorage.setItem("basket", JSON.stringify(basket));
+let id = new URL(window.location).searchParams.get("id");
+
+let listItem = document.querySelector("#cart__items");
+
+let basket = JSON.parse(localStorage.getItem("basket"));
+
+let total = 0;
+
+async function getArticle(idProduct) {
+  const reponseJSON = await fetch(
+    "http://localhost:3000/api/products/" + idProduct
+  );
+  const item = await reponseJSON.json();
+  img.setAttribute("src", item.imageUrl);
+  img.setAttribute("alt", item.altTxt);
+  titleItem.innerHTML = item.name;
+  priceItem.innerHTML = item.price;
+  descriptionItem.innerHTML = item.description;
+
+  /* L'instruction for...of crée
+   une boucle Array pour parcourir les valeurs des différents coloris de la propriété colors ) */
+  /* Création d'un nouveau noeud dans le DOM pour les ajouter */
+
+  for (const color of item.colors) {
+    let colorSelect = document.createElement("option");
+    colorSelect.setAttribute("value", color);
+    colorSelect.innerHTML = color;
+    colorsItem.appendChild(colorSelect);
+  }
 }
 
-// Récupérer un panier dans localStorage
+getArticle(id).then();
+
+// RECUPERATION DES VALEURS DANS LOCAL STORAGE
 function getBasket() {
   let basket = localStorage.getItem("basket");
+
   if (basket == null) {
+    //Si le panier n'existe pas
     return [];
   } else {
     return JSON.parse(basket);
+    //On redonne aux valeurs le format object
   }
 }
-
-// Calculer le nombre de produits qu’il y a dans un panier
-function getNumberProduct() {
-  let basket = getBasket();
-  let number = 0;
-  for (let product of basket) {
-    number += product.quantity;
-  }
-  return number;
-}
-
-//RECUPERER LE PANIER DANS LOCAL STORAGE
-//Parse convertit les données JSON en objet JavaScript
-let basket = JSON.parse(localStorage.getItem("basket"));
-console.log(basket);
-let total = 0;
 
 //PARCOURIR LE PANIER (ARRAY)
 // Création d'une boucle pour parcourir le panier
-for (let item of basket) {
+for (let item of getBasket()) {
   let itemId = item.id;
   let itemColor = item.color;
   let itemQuantity = item.quantity;
 
-  console.log(basket);
+  console.log(item);
 
   //CREER ET INSERER DES ELEMENTS DANS LA PAGE
   //Récuperation des infos API pour affichage produits
@@ -192,6 +207,16 @@ for (let item of basket) {
 
     //AFFICHAGE DU NOMBRE TOTAL D'ARTICLES DANS LE PANIER
 
+    // Calculer le nombre de produits qu’il y a dans un panier
+    function getNumberProduct() {
+      let basket = getBasket();
+      let number = 0;
+      for (let product of basket) {
+        number += product.quantity;
+      }
+      return number;
+    }
+
     let totalItem = document.querySelector("#totalQuantity");
     totalItem.innerHTML = getNumberProduct();
 
@@ -205,7 +230,7 @@ for (let item of basket) {
 
 //VALIDATION DES DONNEES DU FORMULAIRE
 
-//Selection des champs incluant des messages d'erreur
+//Sélection des champs incluant des messages d'erreur
 
 let firstNameErrorMsg = document.querySelector("#firstNameErrorMsg");
 
@@ -217,7 +242,7 @@ let cityErrorMsg = document.querySelector("#cityErrorMsg");
 
 let emailErrorMsg = document.querySelector("#emailErrorMsg");
 
-/*Creation d'expressions régulières (regex) pour contrôler la validité des réponses dans le formulaire */
+/*Création d'expressions régulières (regex) pour contrôler la validité des réponses dans le formulaire */
 
 let stringRegex = /^[a-zA-ZÀ-ÿ]*$/;
 
@@ -226,7 +251,7 @@ let addressRegex = /^[0-9]{1,4}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùû
 let emailRegex = /^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$/;
 
 // Ecoute d'événements sur les divers champs du formulaire
-// verification du champ Prenom
+// Vérification du champ Prénom
 document.querySelector("#firstName").addEventListener("change", () => {
   if (stringRegex.test(firstName.value)) {
     firstNameErrorMsg.innerHTML = "";
@@ -235,7 +260,7 @@ document.querySelector("#firstName").addEventListener("change", () => {
   }
 });
 
-// verification du champ Nom
+// Vérification du champ Nom
 document.querySelector("#lastName").addEventListener("change", () => {
   if (stringRegex.test(lastName.value)) {
     lastNameErrorMsg.innerHTML = "";
@@ -244,7 +269,7 @@ document.querySelector("#lastName").addEventListener("change", () => {
   }
 });
 
-// verification du champ Adresse
+// Vérification du champ Adresse
 document.querySelector("#address").addEventListener("change", () => {
   if (addressRegex.test(address.value)) {
     addressErrorMsg.innerHTML = "";
@@ -253,7 +278,7 @@ document.querySelector("#address").addEventListener("change", () => {
   }
 });
 
-// verification du champ Ville
+// Vérification du champ Ville
 document.querySelector("#city").addEventListener("change", () => {
   if (stringRegex.test(city.value)) {
     cityErrorMsg.innerHTML = "";
@@ -262,7 +287,7 @@ document.querySelector("#city").addEventListener("change", () => {
   }
 });
 
-// verification du champ email
+// Vérification du champ email
 document.querySelector("#email").addEventListener("change", () => {
   if (emailRegex.test(email.value)) {
     emailErrorMsg.innerHTML = "";
@@ -273,49 +298,69 @@ document.querySelector("#email").addEventListener("change", () => {
 
 //ENVOI DES DONNEES DU FORMULAIRE AU SERVEUR
 
-//Ecoute d'événement sur le bouton Commander
-order.addEventListener("click", (event) => {
-  event.preventDefault();
+function sendPost() {
+  //Ecoute d'événement sur le bouton Commander
+  const order = document.getElementById("order");
+  order.addEventListener("click", (e) => {
+    e.preventDefault();
+    //Contrôle de validité avant envoi au serveur
 
-  // Récuperation du contenu du formulaire
-  let dataClient = {
-    firstName: document.getElementById("firstName").value,
-    lastName: document.getElementById("lastName").value,
-    address: document.getElementById("address").value,
-    city: document.getElementById("city").value,
-    email: document.getElementById("email").value,
-  };
+    
 
-  localStorage.setItem("dataClient", JSON.stringify(dataClient));
+    // Récuperation du contenu du formulaire
 
-  console.log(dataClient);
+    let inputName = document.getElementById("firstName");
+    let inputLastName = document.getElementById("lastName");
+    let inputAddress = document.getElementById("address");
+    let inputCity = document.getElementById("city");
+    let inputMail = document.getElementById("email");
 
-  /*construction d'un tableau pour stocker les produits qui sont dans le localStorage */
-  let orderResult = [];
+    /*construction d'un tableau pour stocker les produits qui sont dans le localStorage */
+    let idProducts = [];
 
-  //Création d'une boucle pour parcourir le tableau
-  basket.forEach((item) => {
-    orderResult.push(item.id);
+    //Création d'une boucle pour parcourir le tableau
+    basket.forEach((item) => {
+      idProducts.push(item.id);
+    });
+    console.log(idProducts);
+
+    /*Création d'un objet qui regroupe les valeurs du formulaire et les produits stockés dans dans le localStorage */
+
+    const order = {
+      contact: {
+        firstName: inputName.value,
+        lastName: inputLastName.value,
+        address: inputAddress.value,
+        city: inputCity.value,
+        email: inputMail.value,
+      },
+      products: idProducts,
+    };
+
+    //Envoi du formulaire au serveur avec la méthode POST
+    console.log("depart de la requête");
+
+    const options = {
+      method: "POST",
+      body: JSON.stringify(order),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    fetch("http://localhost:3000/api/products/order", options)
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+
+        localStorage.setItem("orderId", data.orderId);
+
+        document.location.href = "confirmation.html";
+      })
+
+      .catch((err) => {
+        alert("Un problème est survenu: " + err.message);
+      });
   });
-
-  console.log(orderResult);
-
-  /*Création d'un objet qui regroupe les valeurs du formulaire et les produits stockés dans dans le localStorage */
-
-  let dataFormulaire = { dataClient, orderResult };
-
-  //Envoi du formulaire au serveur avec la méthode POST
-  console.log("depart de la requete");
-
-  fetch("http://localhost:3000/api/products/order", {
-    method: "POST",
-
-    headers: { "Content-Type": "application/json" },
-
-    body: JSON.stringify(dataFormulaire)
-  }).then(res => {
-    console.log("reponse complete", res);
-});
-    window.location.assign("confirmation.html?id=" + dataClient);
-  
-});
+}
+sendPost();

@@ -1,9 +1,11 @@
 //ON RECUPERE L'ID DU PRODUIT A AFFICHER
-const idOrder = new URL(window.location.href).searchParams.get("id");
+function recupIdForm() {
+  const idForm = document.getElementById("orderId");
+  idForm.innerText = localStorage.getItem("orderId");
+  console.log(localStorage.getItem("orderId"));
+}
 
-//AFFICHER LE NUMERO DE COMMANDE
-let orderId = document.getElementById("orderId");
-orderId.innerHTML = idOrder;
+recupIdForm();
 
-console.log(idOrder);
-console.log(orderId);
+
+
