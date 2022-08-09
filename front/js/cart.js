@@ -1,9 +1,26 @@
 /* COMMENT AFFICHER UN TABLEAU RECAPITULATIF DES ACHATS DANS LA   PAGE PANIER*/
 console.log("connecté");
 
+// RECUPERATION DES VALEURS DANS LOCAL STORAGE
+function getBasket() {
+  let basket = localStorage.getItem("basket");
+
+  if (basket == null) {
+    //Si le panier n'existe pas
+    return [];
+  } else {
+    return JSON.parse(basket);
+    //On redonne aux valeurs le format object
+  }
+}
+
+let localStorageData = getBasket();
+console.log(localStorageData[0]["id"]);
+console.log(localStorageData[0]);
+
 // Requêter l'API
 
-let id = new URL(window.location).searchParams.get("id");
+let idProduct = localStorageData[0]["id"];
 
 let listItem = document.querySelector("#cart__items");
 
@@ -34,20 +51,7 @@ async function getArticle(idProduct) {
   }
 }
 
-getArticle(id).then();
-
-// RECUPERATION DES VALEURS DANS LOCAL STORAGE
-function getBasket() {
-  let basket = localStorage.getItem("basket");
-
-  if (basket == null) {
-    //Si le panier n'existe pas
-    return [];
-  } else {
-    return JSON.parse(basket);
-    //On redonne aux valeurs le format object
-  }
-}
+getArticle(idProduct).then();
 
 //PARCOURIR LE PANIER (ARRAY)
 // Création d'une boucle pour parcourir le panier
@@ -300,67 +304,89 @@ document.querySelector("#email").addEventListener("change", () => {
 
 function sendPost() {
   //Ecoute d'événement sur le bouton Commander
-  const order = document.getElementById("order");
-  order.addEventListener("click", (e) => {
+  const orderForm = document.getElementById("order");
+  orderForm.addEventListener("click", (e) => {
     e.preventDefault();
     //Contrôle de validité avant envoi au serveur
 
-    
+    if (
+      stringRegex.test(firstName.value) == false ||
+      stringRegex.test(lastName.value) == false ||
+      addressRegex.test(address.value) == false ||
+      stringRegex.test(city.value) == false ||
+      emailRegex.test(email.value) == false
+    ) {
+      alert("Veuillez renseigner correctement les champs svp");
 
-    // Récuperation du contenu du formulaire
-
-    let inputName = document.getElementById("firstName");
-    let inputLastName = document.getElementById("lastName");
-    let inputAddress = document.getElementById("address");
-    let inputCity = document.getElementById("city");
-    let inputMail = document.getElementById("email");
-
-    /*construction d'un tableau pour stocker les produits qui sont dans le localStorage */
-    let idProducts = [];
-
-    //Création d'une boucle pour parcourir le tableau
-    basket.forEach((item) => {
-      idProducts.push(item.id);
-    });
-    console.log(idProducts);
-
-    /*Création d'un objet qui regroupe les valeurs du formulaire et les produits stockés dans dans le localStorage */
-
-    const order = {
-      contact: {
-        firstName: inputName.value,
-        lastName: inputLastName.value,
-        address: inputAddress.value,
-        city: inputCity.value,
-        email: inputMail.value,
-      },
-      products: idProducts,
-    };
-
-    //Envoi du formulaire au serveur avec la méthode POST
-    console.log("depart de la requête");
-
-    const options = {
-      method: "POST",
-      body: JSON.stringify(order),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    fetch("http://localhost:3000/api/products/order", options)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-
-        localStorage.setItem("orderId", data.orderId);
-
-        document.location.href = "confirmation.html";
-      })
-
-      .catch((err) => {
-        alert("Un problème est survenu: " + err.message);
-      });
+      return false;
+      //On empêche le rafraîchissement de la page
+    } else if (
+      firstName.value === "" ||
+      lastName.value === "" ||
+      address.value === "" ||
+      city.value === "" ||
+      email.value
+    ) {
+      alert("Veuillez renseigner correctement les champs svp");
+      return false;
+    } else alert("Votre commande a été enregistrée");
+    return true;
   });
+
+  // Récuperation du contenu du formulaire
+
+  let inputName = document.getElementById("firstName");
+  let inputLastName = document.getElementById("lastName");
+  let inputAddress = document.getElementById("address");
+  let inputCity = document.getElementById("city");
+  let inputMail = document.getElementById("email");
+
+  /*construction d'un tableau pour stocker les produits qui sont dans le localStorage */
+  let idProducts = [];
+
+  //Création d'une boucle pour parcourir le tableau
+  basket.forEach((item) => {
+    idProducts.push(item.id);
+  });
+  console.log(idProducts);
+
+  /*Création d'un objet qui regroupe les valeurs du formulaire et les produits stockés dans dans le localStorage */
+
+  const order = {
+    contact: {
+      firstName: inputName.value,
+      lastName: inputLastName.value,
+      address: inputAddress.value,
+      city: inputCity.value,
+      email: inputMail.value,
+    },
+    products: idProducts,
+  };
+
+  //Envoi du formulaire au serveur avec la méthode POST
+  console.log("depart de la requête");
+
+  const options = {
+    method: "POST",
+    body: JSON.stringify(order),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  fetch("http://localhost:3000/api/products/order", options)
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+
+      localStorage.setItem("orderId", data.orderId);
+
+      document.location.href = "confirmation.html";
+    })
+
+    .catch((err) => {
+      alert("Un problème est survenu: " + err.message);
+    });
 }
+
 sendPost();

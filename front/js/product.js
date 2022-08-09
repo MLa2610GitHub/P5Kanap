@@ -99,6 +99,7 @@ function addArticle() {
     id: id,
     color: colorSelected.value,
     quantity: parseInt(quantity.value),
+    imageUrl: imageUrl.value,
   };
 
   // on gère la quantité ajoutée avec la méthode find
