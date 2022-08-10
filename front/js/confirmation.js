@@ -6,6 +6,3 @@ function recupIdForm() {
 }
 
 recupIdForm();
-
-
-

@@ -1,6 +1,21 @@
 /* COMMENT AFFICHER UN TABLEAU RECAPITULATIF DES ACHATS DANS LA   PAGE PANIER*/
 console.log("connecté");
 
+// Requêter l'API
+
+let id = new URL(window.location).searchParams.get("id");
+
+let listItem = document.querySelector("#cart__items");
+
+let basket = JSON.parse(localStorage.getItem("basket"));
+
+let total = 0;
+
+//ENREGISTRER UN PANIER DANS LOCAL STORAGE
+function saveBasket(basket) {
+  localStorage.setItem("basket", JSON.stringify(basket));
+}
+
 // RECUPERATION DES VALEURS DANS LOCAL STORAGE
 function getBasket() {
   let basket = localStorage.getItem("basket");
@@ -13,45 +28,6 @@ function getBasket() {
     //On redonne aux valeurs le format object
   }
 }
-
-let localStorageData = getBasket();
-console.log(localStorageData[0]["id"]);
-console.log(localStorageData[0]);
-
-// Requêter l'API
-
-let idProduct = localStorageData[0]["id"];
-
-let listItem = document.querySelector("#cart__items");
-
-let basket = JSON.parse(localStorage.getItem("basket"));
-
-let total = 0;
-
-async function getArticle(idProduct) {
-  const reponseJSON = await fetch(
-    "http://localhost:3000/api/products/" + idProduct
-  );
-  const item = await reponseJSON.json();
-  img.setAttribute("src", item.imageUrl);
-  img.setAttribute("alt", item.altTxt);
-  titleItem.innerHTML = item.name;
-  priceItem.innerHTML = item.price;
-  descriptionItem.innerHTML = item.description;
-
-  /* L'instruction for...of crée
-   une boucle Array pour parcourir les valeurs des différents coloris de la propriété colors ) */
-  /* Création d'un nouveau noeud dans le DOM pour les ajouter */
-
-  for (const color of item.colors) {
-    let colorSelect = document.createElement("option");
-    colorSelect.setAttribute("value", color);
-    colorSelect.innerHTML = color;
-    colorsItem.appendChild(colorSelect);
-  }
-}
-
-getArticle(idProduct).then();
 
 //PARCOURIR LE PANIER (ARRAY)
 // Création d'une boucle pour parcourir le panier
@@ -234,6 +210,15 @@ for (let item of getBasket()) {
 
 //VALIDATION DES DONNEES DU FORMULAIRE
 
+//Déclaration de la variable qui recueillera les data des clients
+let contact = {
+  firstName: "",
+  lastName: "",
+  address: "",
+  city: "",
+  email: "",
+};
+
 //Sélection des champs incluant des messages d'erreur
 
 let firstNameErrorMsg = document.querySelector("#firstNameErrorMsg");
@@ -304,8 +289,8 @@ document.querySelector("#email").addEventListener("change", () => {
 
 function sendPost() {
   //Ecoute d'événement sur le bouton Commander
-  const orderForm = document.getElementById("order");
-  orderForm.addEventListener("click", (e) => {
+  const order = document.getElementById("order");
+  order.addEventListener("click", (e) => {
     e.preventDefault();
     //Contrôle de validité avant envoi au serveur
 
@@ -328,65 +313,67 @@ function sendPost() {
       email.value
     ) {
       alert("Veuillez renseigner correctement les champs svp");
+
       return false;
-    } else alert("Votre commande a été enregistrée");
-    return true;
+      //On empêche le rafraîchissement de la page
+    } else {
+        localStorage.setItem("contact", JSON.stringify(contact));
+
+      // Récuperation du contenu du formulaire
+
+      let inputName = document.getElementById("firstName");
+      let inputLastName = document.getElementById("lastName");
+      let inputAddress = document.getElementById("address");
+      let inputCity = document.getElementById("city");
+      let inputMail = document.getElementById("email");
+
+      /*construction d'un tableau pour stocker les produits qui sont dans le localStorage */
+      let idProducts = [];
+
+      //Création d'une boucle pour parcourir le tableau
+      basket.forEach((item) => {
+        idProducts.push(item.id);
+      });
+      console.log(idProducts);
+
+      /*Création d'un objet qui regroupe les valeurs du formulaire et les produits stockés dans dans le localStorage */
+
+      const order = {
+        contact: {
+          firstName: inputName.value,
+          lastName: inputLastName.value,
+          address: inputAddress.value,
+          city: inputCity.value,
+          email: inputMail.value,
+        },
+        products: idProducts,
+      };
+
+      //Envoi du formulaire au serveur avec la méthode POST
+      console.log("depart de la requête");
+
+      const options = {
+        method: "POST",
+        body: JSON.stringify(order),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      fetch("http://localhost:3000/api/products/order", options)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+
+          localStorage.setItem("orderId", data.orderId);
+
+          document.location.href = "confirmation.html";
+        })
+
+        .catch((err) => {
+          alert("Un problème est survenu: " + err.message);
+        });
+    }
   });
-
-  // Récuperation du contenu du formulaire
-
-  let inputName = document.getElementById("firstName");
-  let inputLastName = document.getElementById("lastName");
-  let inputAddress = document.getElementById("address");
-  let inputCity = document.getElementById("city");
-  let inputMail = document.getElementById("email");
-
-  /*construction d'un tableau pour stocker les produits qui sont dans le localStorage */
-  let idProducts = [];
-
-  //Création d'une boucle pour parcourir le tableau
-  basket.forEach((item) => {
-    idProducts.push(item.id);
-  });
-  console.log(idProducts);
-
-  /*Création d'un objet qui regroupe les valeurs du formulaire et les produits stockés dans dans le localStorage */
-
-  const order = {
-    contact: {
-      firstName: inputName.value,
-      lastName: inputLastName.value,
-      address: inputAddress.value,
-      city: inputCity.value,
-      email: inputMail.value,
-    },
-    products: idProducts,
-  };
-
-  //Envoi du formulaire au serveur avec la méthode POST
-  console.log("depart de la requête");
-
-  const options = {
-    method: "POST",
-    body: JSON.stringify(order),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
-
-  fetch("http://localhost:3000/api/products/order", options)
-    .then((res) => res.json())
-    .then((data) => {
-      console.log(data);
-
-      localStorage.setItem("orderId", data.orderId);
-
-      document.location.href = "confirmation.html";
-    })
-
-    .catch((err) => {
-      alert("Un problème est survenu: " + err.message);
-    });
 }
-
 sendPost();

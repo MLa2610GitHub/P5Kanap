@@ -9,13 +9,14 @@ console.log(window.location.href);
 //retourne une adresse web personnalisée
 
 //Récupération des paramètres de l'url
-const recupUrl = window.location.href;
+let recupUrl = window.location.href;
 
 /* Le constructeur URL() renvoie un nouvel objet URL représentant l'URL définie par les paramètres */
-const url = new URL(recupUrl);
+let url = new URL(recupUrl);
 
 //ON RECUPERE L'ID DU PRODUIT A AFFICHER
-const id = url.searchParams.get("id");
+let id = url.searchParams.get("id");
+console.log(id)
 
 //ENREGISTRER UN PANIER DANS LOCAL STORAGE
 function saveBasket(basket) {
@@ -99,7 +100,6 @@ function addArticle() {
     id: id,
     color: colorSelected.value,
     quantity: parseInt(quantity.value),
-    imageUrl: imageUrl.value,
   };
 
   // on gère la quantité ajoutée avec la méthode find
