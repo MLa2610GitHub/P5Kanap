@@ -6,3 +6,6 @@ function recupIdForm() {
 }
 
 recupIdForm();
+
+//Le numéro de commande est affiché, mais il est effacé du localStorage
+localStorage.clear();

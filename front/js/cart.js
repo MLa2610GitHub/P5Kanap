@@ -14,7 +14,10 @@ let total = 0;
 //ENREGISTRER UN PANIER DANS LOCAL STORAGE
 function saveBasket(basket) {
   localStorage.setItem("basket", JSON.stringify(basket));
+  
 }
+
+console.log(basket);
 
 // RECUPERATION DES VALEURS DANS LOCAL STORAGE
 function getBasket() {
@@ -22,12 +25,16 @@ function getBasket() {
 
   if (basket == null) {
     //Si le panier n'existe pas
+    let emptyBasket = document.querySelector("h1");
+    emptyBasket.innerHTML = emptyBasket.innerText + " est vide !";
     return [];
   } else {
     return JSON.parse(basket);
+
     //On redonne aux valeurs le format object
   }
 }
+
 
 //PARCOURIR LE PANIER (ARRAY)
 // Création d'une boucle pour parcourir le panier
@@ -35,8 +42,31 @@ for (let item of getBasket()) {
   let itemId = item.id;
   let itemColor = item.color;
   let itemQuantity = item.quantity;
+ 
 
   console.log(item);
+
+  //Tri de la commande par type d'article
+
+  let cartListProducts = [];
+  if (localStorage.getItem("basket") !== null) {
+    cartListProducts = JSON.parse(localStorage.getItem("basket"));
+
+    console.log(basket, "basket");
+
+    cartListProducts.sort(function (a, b) {
+      if (a.id < b.id) {
+        return -1;
+      }
+      if (a.id > b.id) {
+        return 1;
+      }
+      return 0;
+    });
+
+    console.log(cartListProducts.sort());
+  }
+  cartListProducts.sort();
 
   //CREER ET INSERER DES ELEMENTS DANS LA PAGE
   //Récuperation des infos API pour affichage produits
@@ -205,7 +235,9 @@ for (let item of getBasket()) {
     totalItemPrice.innerHTML = total;
     console.log(total);
   }
+
   getResponseApi(itemId).then();
+
 }
 
 //VALIDATION DES DONNEES DU FORMULAIRE
@@ -356,4 +388,7 @@ order.addEventListener("click", (e) => {
     .catch((err) => {
       alert("Un problème est survenu: " + err.message);
     });
+
+
 });
+

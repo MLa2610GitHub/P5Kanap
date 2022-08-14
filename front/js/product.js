@@ -82,8 +82,7 @@ getArticle(id).then();
 
 //AJOUTER DES PRODUITS DANS LE PANIER
 
-/* On sélectionne les éléments nécessaires : le bouton 'Ajouter au panier', le nombre d'articles et la couleur choisie. 
-Les variables colorsItem et id sont déjà définies */
+/* On sélectionne les éléments nécessaires : le bouton 'Ajouter au panier', le nombre d'articles et la couleur choisie */
 
 let btnAddToCart = document.getElementById("addToCart");
 
@@ -94,18 +93,21 @@ btnAddToCart.addEventListener("click", (e) => {
   let colorSelected = document.getElementById("colors");
 
   //AJOUT D'UN PRODUIT AU PANIER SANS SUPPRIMER L'ANCIEN
+  // On vérifie que le panier est dispo dans localstorage
+  // Si c'est le cas, on ajoute le produit voulu dans LS
 
   function addArticle() {
+    // On récupère le panier qui existe dans localStorage
     let basket = getBasket();
 
-    // Récupération des choix du client dans une variable
+    // Stockage des choix du client dans une variable
     const product = {
       id: id,
       color: colorSelected.value,
       quantity: parseInt(quantity.value),
     };
 
-    //Empêcher la soumission du formulaire s'il n'est pas rempli
+    //Empêcher l'envoi du formulaire s'il n'est pas rempli
     if (
       colorSelected.value == "" ||
       quantity.value <= 0 ||
@@ -114,9 +116,10 @@ btnAddToCart.addEventListener("click", (e) => {
       alert("Choisissez une couleur et une quantité svp");
       window.history.back(index.html);
     } else {
+      //on informe le client que sa commande est ok
       alert("Votre commande a été ajoutée au panier ! ");
     }
-    // on gère la quantité ajoutée avec la méthode find
+    // On gère la quantité ajoutée avec la méthode find
     /* On cherche dans le panier s'il y a un produit (p) dont l'id (p.id) est égal à l'id et à la couleur du produit qu'on veut ajouter (product.id). Si find ne trouve rien, il retourne 'undefined' */
 
     let foundProduct = basket.find(
@@ -129,12 +132,16 @@ btnAddToCart.addEventListener("click", (e) => {
       saveBasket(basket);
       return;
     }
+
     basket.push(product);
+
     saveBasket(basket);
+
     console.log("item ajouté ! ");
   }
 
   addArticle();
 
   window.location.assign("cart.html");
+  //La méthode location.assign() ouvre la page à l'URL indiquée
 }); /////// Fermeture de btnAddToCart.addEventListener
