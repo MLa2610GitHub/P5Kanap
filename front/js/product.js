@@ -11,10 +11,10 @@ console.log(window.location.href);
 //Récupération des paramètres de l'url
 const recupUrl = window.location.href;
 
-/* Le constructeur URL() renvoie un nouvel objet URL représentant l'URL définie par les paramètres */
+// Le constructeur URL() renvoie un nouvel objet URL représentant l'URL définie par les paramètres 
 const url = new URL(recupUrl);
 
-//ON RECUPERE L'ID DU PRODUIT A AFFICHER
+//ON RECUPERE L'ID DU PRODUIT A AFFICHER grâce au constructeur URLSearchParams()
 const id = url.searchParams.get("id");
 
 //ENREGISTRER UN PANIER DANS LOCAL STORAGE
@@ -22,7 +22,7 @@ function saveBasket(basket) {
   localStorage.setItem("basket", JSON.stringify(basket));
 }
 /*On ne peut pas enregistrer tableaux et objets dans LS.
-On transforme les données en chaîne de caracteres */
+On transforme les données en chaîne de caractères */
 
 // RECUPERATION DES VALEURS DANS LOCAL STORAGE
 function getBasket() {
@@ -33,13 +33,13 @@ function getBasket() {
     return [];
   } else {
     return JSON.parse(basket);
-    //On redonne aux valeurs le format object
+    //On redonne aux valeurs le format objet
   }
 }
 
 //INSERER UN PRODUIT ET SES DETAILS DANS LA PAGE PRODUIT
 
-//Sélection des différents éléments dont on a besoin
+//Sélection des différents éléments du DOM dont on a besoin
 let imgItem = document.querySelector(".item__img");
 let img = document.createElement("img");
 imgItem.appendChild(img);
@@ -52,8 +52,8 @@ let descriptionItem = document.getElementById("description");
 
 let colorsItem = document.getElementById("colors");
 
-/* Récupération des infos pour chaque canapé différent avec l'id via une fonction async/await */
-/* affichage d'une fiche produit pour chaque canapé */
+// Récupération des infos pour chaque canapé différent avec l'id via une fonction async/await
+// Affichage d'une fiche produit pour chaque canapé 
 
 async function getArticle(idProduct) {
   const reponseJSON = await fetch(
@@ -66,9 +66,9 @@ async function getArticle(idProduct) {
   priceItem.innerHTML = item.price;
   descriptionItem.innerHTML = item.description;
 
-  /* L'instruction for...of crée
-   une boucle Array pour parcourir les valeurs des propriétés (ici les différents coloris de la propriété colors qui sont stockés dans un tableau) */
-  /* Création d'un nouveau noeud dans le DOM pour les ajouter */
+  // L'instruction for...of crée une boucle Array pour parcourir les valeurs de la propriété colors
+  // La boucle parcourt les différents coloris qui sont stockés dans un tableau
+  // Création d'un nouveau noeud dans le DOM pour permettre de sélectionner une couleur
 
   for (const color of item.colors) {
     let colorSelect = document.createElement("option");
@@ -78,7 +78,7 @@ async function getArticle(idProduct) {
   }
 }
 
-getArticle(id).then();
+getArticle(id).then(); // Fin de la fonction qui récupère et affiche les infos du canapé 
 
 //AJOUTER DES PRODUITS DANS LE PANIER
 
@@ -94,7 +94,7 @@ btnAddToCart.addEventListener("click", (e) => {
 
   //AJOUT D'UN PRODUIT AU PANIER SANS SUPPRIMER L'ANCIEN
   // On vérifie que le panier est dispo dans localstorage
-  // Si c'est le cas, on ajoute le produit voulu dans LS
+  // Si c'est le cas, on ajoute le produit voulu dans localstorage
 
   function addArticle() {
     // On récupère le panier qui existe dans localStorage
@@ -107,7 +107,7 @@ btnAddToCart.addEventListener("click", (e) => {
       quantity: parseInt(quantity.value),
     };
 
-    //Empêcher l'envoi du formulaire s'il n'est pas rempli
+    //Empêcher l'envoi du formulaire s'il n'est pas correctement rempli
     if (
       colorSelected.value == "" ||
       quantity.value <= 0 ||
@@ -135,13 +135,14 @@ btnAddToCart.addEventListener("click", (e) => {
 
     basket.push(product);
 
-    saveBasket(basket);
+    saveBasket(basket); //Enregistrement du panier dans localStorage
 
     console.log("item ajouté ! ");
   }
 
-  addArticle();
+  addArticle(); // Fin de la fonction qui ajoute les produits au panier
 
-  window.location.assign("cart.html");
-  //La méthode location.assign() ouvre la page à l'URL indiquée
+
+  window.location.assign("cart.html"); //La méthode location.assign() ouvre la page à l'URL indiquée
+
 }); /////// Fermeture de btnAddToCart.addEventListener

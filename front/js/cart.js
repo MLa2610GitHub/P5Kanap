@@ -1,7 +1,5 @@
-/* COMMENT AFFICHER UN TABLEAU RECAPITULATIF DES ACHATS DANS LA   PAGE PANIER*/
+/* COMMENT AFFICHER UN TABLEAU RECAPITULATIF DES ACHATS DANS LA PAGE PANIER*/
 console.log("connecté");
-
-// Requêter l'API
 
 let id = new URL(window.location).searchParams.get("id");
 
@@ -11,15 +9,15 @@ let basket = JSON.parse(localStorage.getItem("basket"));
 
 let total = 0;
 
+//FONCTIONS UTILISEES
+
 //ENREGISTRER UN PANIER DANS LOCAL STORAGE
 function saveBasket(basket) {
-  localStorage.setItem("basket", JSON.stringify(basket));
-  
+  localStorage.setItem("basket", JSON.stringify(basket));  
 }
-
 console.log(basket);
 
-// RECUPERATION DES VALEURS DANS LOCAL STORAGE
+// RECUPERER DES VALEURS DANS LOCAL STORAGE
 function getBasket() {
   let basket = localStorage.getItem("basket");
 
@@ -30,24 +28,20 @@ function getBasket() {
     return [];
   } else {
     return JSON.parse(basket);
-
-    //On redonne aux valeurs le format object
+    //On redonne aux valeurs le format objet
   }
 }
 
-
-//PARCOURIR LE PANIER (ARRAY)
-// Création d'une boucle pour parcourir le panier
+//PARCOURIR LE PANIER
+// Création d'une boucle pour parcourir l'array
 for (let item of getBasket()) {
   let itemId = item.id;
   let itemColor = item.color;
   let itemQuantity = item.quantity;
  
-
   console.log(item);
 
   //Tri de la commande par type d'article
-
   let cartListProducts = [];
   if (localStorage.getItem("basket") !== null) {
     cartListProducts = JSON.parse(localStorage.getItem("basket"));
@@ -69,7 +63,7 @@ for (let item of getBasket()) {
   cartListProducts.sort();
 
   //CREER ET INSERER DES ELEMENTS DANS LA PAGE
-  //Récuperation des infos API pour affichage produits
+  //Récuperation des infos API pour afficher les produits
   async function getResponseApi(itemId) {
     const responseJSON = await fetch(
       "http://localhost:3000/api/products/" + itemId
@@ -79,9 +73,10 @@ for (let item of getBasket()) {
     const response = await responseJSON.json();
     console.log(response, "objet Javascript");
 
-    //Injection des infos dans la page
+    //Injection des infos dans la page web
+    //Sélection des éléments du DOM dont on a besoin
 
-    //Création de la balise article et insertion dans balise section
+    //Création de la balise article et insertion dans la balise section
     let productArticle = document.createElement("article");
     document.querySelector("#cart__items").appendChild(productArticle);
     productArticle.className = "cart__item";
@@ -166,52 +161,60 @@ for (let item of getBasket()) {
     // MODIFIER LA QUANTITE D'UN PRODUIT DANS LE PANIER
 
     function changeQuantity() {
+      //Sélection de l'emplacement du bouton "modifier la quantité" dans le DOM
       let itemQuantityModification = document.querySelectorAll(".itemQuantity");
+      //Création d'une boucle pour parcourir le panier
       for (let i = 0; i < itemQuantityModification.length; i++) {
+        //Création d'un écouteur d'événement pour surveiller le panier
         itemQuantityModification[i].addEventListener("change", (event) => {
-          event.preventDefault();
+          event.preventDefault(); //On empêche la page de se rafraîchir
 
           //Sélection de l'élément à modifier en fonction de son id et de sa couleur
           let itemQuantityModified = basket[i].quantity;
           let itemQuantityNewValue = itemQuantityModification[i].valueAsNumber;
 
+          //Utilisation de la méthode filter pour vérifier si des changements ont lieu
           let resultModified = basket.filter(
             (p) => p.itemQuantityNewValue !== itemQuantityModified
           );
           resultModified.quantity = itemQuantityNewValue;
           basket[i].quantity = resultModified.quantity;
-          saveBasket(basket);
-          location.reload(); // recharger la  page
-          alert("Le contenu de votre panier va être modifié");
-        }); //fin addEventListener
-      }
-    }
+          saveBasket(basket); // Enregistrement du panier
+
+          location.reload(); // Recharger la page
+          alert("Le contenu de votre panier va être modifié"); //Message adressé au client
+        }); //Fin addEventListener
+      } // Fermeture de la boucle
+    } // Fin de la fonction qui modifie la quantité d'articles dans le panier
 
     changeQuantity();
 
     //SUPPRIMER UN PRODUIT DU PANIER
 
     function removeFromBasket() {
+      //Sélection de l'emplacement du bouton "Supprimer" dans le DOM
       let deleteItem = document.querySelectorAll(".deleteItem");
-
+      //Création d'une boucle pour parcourir le panier
       for (let p = 0; p < deleteItem.length; p++) {
+        //Création d'un écouteur d'événement pour surveiller le panier
         deleteItem[p].addEventListener("click", (event) => {
-          event.preventDefault();
+          event.preventDefault(); //On empêche la page de se rafraîchir
 
           //Sélection de l'élément à supprimer en fonction de son id et de sa couleur
           let deleteId = basket[p].id;
           let deleteColor = basket[p].color;
 
+          //Utilisation de la méthode filter pour vérifier si des changements ont lieu
           basket = basket.filter(
             (p) => p.id !== deleteId || p.color !== deleteColor
           );
-          saveBasket(basket);
-          location.reload();
+          saveBasket(basket); // Enregistrement du panier
+          location.reload(); // Recharger la page
 
-          alert("Votre article va être supprimé.");
-        }); //fin addEventListener
-      }
-    }
+          alert("Votre article va être supprimé."); //Message adressé au client
+        }); // Fin addEventListener
+      } // Fermeture de la boucle
+    } // Fin de la fonction qui supprime un élément du panier
 
     removeFromBasket();
 
@@ -227,18 +230,21 @@ for (let item of getBasket()) {
       return number;
     }
 
+    //Sélection de l'élément dans le DOM
+    //Affichage du nombre total d'articles commandés
     let totalItem = document.querySelector("#totalQuantity");
     totalItem.innerHTML = getNumberProduct();
 
+    //Sélection de l'élément dans le DOM
     //Affichage du montant total de la commande
     let totalItemPrice = document.querySelector("#totalPrice");
     totalItemPrice.innerHTML = total;
     console.log(total);
-  }
+  } // Fin de la fonction qui récupere les infos de l'API pour afficher les produits
 
   getResponseApi(itemId).then();
 
-}
+} //Fermeture de la boucle qui parcourt le panier
 
 //VALIDATION DES DONNEES DU FORMULAIRE
 
@@ -262,14 +268,14 @@ let addressRegex = /^[0-9]{1,4}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùû
 
 let emailRegex = /^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$/;
 
-// Ecoute d'événements sur les divers champs du formulaire
+// Ecoute d'événements dans les champs du formulaire
 // Vérification du champ Prénom
 document.querySelector("#firstName").addEventListener("change", () => {
   if (stringRegex.test(firstName.value)) {
     firstNameErrorMsg.innerHTML = "";
   } else {
     firstNameErrorMsg.innerHTML =
-      "Veuillez entrer votre prénom au bon format svp";
+      "Veuillez entrer votre prénom au bon format svp"; // Message pour guider le client
   }
 });
 
@@ -278,7 +284,7 @@ document.querySelector("#lastName").addEventListener("change", () => {
   if (stringRegex.test(lastName.value)) {
     lastNameErrorMsg.innerHTML = "";
   } else {
-    lastNameErrorMsg.innerHTML = "Veuillez entrer votre nom au bon format svp";
+    lastNameErrorMsg.innerHTML = "Veuillez entrer votre nom au bon format svp"; // Message pour guider le client
   }
 });
 
@@ -288,7 +294,7 @@ document.querySelector("#address").addEventListener("change", () => {
     addressErrorMsg.innerHTML = "";
   } else {
     addressErrorMsg.innerHTML =
-      "Veuillez entrer votre adresse au bon format svp";
+      "Veuillez entrer votre adresse au bon format svp"; // Message pour guider le client
   }
 });
 
@@ -298,7 +304,7 @@ document.querySelector("#city").addEventListener("change", () => {
     cityErrorMsg.innerHTML = "";
   } else {
     cityErrorMsg.innerHTML =
-      "Veuillez entrer le nom de la ville au bon format svp";
+      "Veuillez entrer le nom de la ville au bon format svp"; // Message pour guider le client
   }
 });
 
@@ -307,7 +313,7 @@ document.querySelector("#email").addEventListener("change", () => {
   if (emailRegex.test(email.value)) {
     emailErrorMsg.innerHTML = "";
   } else {
-    emailErrorMsg.innerHTML = "Veuillez entrer une adresse mail valide svp";
+    emailErrorMsg.innerHTML = "Veuillez entrer une adresse mail valide svp"; // Message pour guider le client
   }
 });
 
@@ -316,8 +322,9 @@ document.querySelector("#email").addEventListener("change", () => {
 //Ecoute d'événement sur le bouton Commander
 const order = document.getElementById("order");
 order.addEventListener("click", (e) => {
-  e.preventDefault();
-  //Contrôle de validité avant envoi au serveur
+  e.preventDefault(); // On empêche la page de se rafraîchir pour ne pas perdre les données
+
+  //Création d'un contrôle de validité avant envoi au serveur
 
   if (
     firstName.value == "" ||
@@ -326,13 +333,13 @@ order.addEventListener("click", (e) => {
     city.value == "" ||
     email.value == ""
   ) {
-    alert("Veuillez remplir tous les champs svp");
+    alert("Veuillez remplir tous les champs svp"); // Message pour guider le client
     window.history.back(product.html);
   } else {
-    alert("Votre commande a été enregistrée ! ");
+    alert("Votre commande a été enregistrée ! "); // Message pour guider le client
   }
 
-  // Récuperation du contenu du formulaire
+  // Sélection des éléments du formulaire
 
   let inputName = document.getElementById("firstName");
   let inputLastName = document.getElementById("lastName");
@@ -349,7 +356,7 @@ order.addEventListener("click", (e) => {
   });
   console.log(idProducts);
 
-  /*Création d'un objet qui regroupe les valeurs du formulaire et les produits stockés dans dans le localStorage */
+  /*Création d'un objet qui contient les valeurs du formulaire + les produits stockés dans localStorage */
 
   const order = {
     contact: {
@@ -362,7 +369,7 @@ order.addEventListener("click", (e) => {
     products: idProducts,
   };
 
-  localStorage.setItem("order", JSON.stringify(order));
+  localStorage.setItem("order", JSON.stringify(order)); //Enregistrement des données dans localStorage
 
   //Envoi du formulaire au serveur avec la méthode POST
   console.log("depart de la requête");
@@ -380,9 +387,9 @@ order.addEventListener("click", (e) => {
     .then((data) => {
       console.log(data);
 
-      localStorage.setItem("orderId", data.orderId);
+      localStorage.setItem("orderId", data.orderId); //Enregistrement dans localStorage
 
-      document.location.href = "confirmation.html";
+      document.location.href = "confirmation.html"; //Redirection du client vers la page Confirmation
     })
 
     .catch((err) => {
@@ -390,5 +397,5 @@ order.addEventListener("click", (e) => {
     });
 
 
-});
+}); //Fin de l'addEventListener
 
