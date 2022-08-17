@@ -13,7 +13,7 @@ let total = 0;
 
 //ENREGISTRER UN PANIER DANS LOCAL STORAGE
 function saveBasket(basket) {
-  localStorage.setItem("basket", JSON.stringify(basket));  
+  localStorage.setItem("basket", JSON.stringify(basket));
 }
 console.log(basket);
 
@@ -32,35 +32,79 @@ function getBasket() {
   }
 }
 
+// MODIFIER LA QUANTITE D'UN PRODUIT DANS LE PANIER
+function changeQuantity() {
+  //Sélection de l'emplacement du bouton "modifier la quantité" dans le DOM
+  let itemQuantityModification = document.querySelectorAll(".itemQuantity");
+  //Création d'une boucle pour parcourir le panier
+  for (let i = 0; i < itemQuantityModification.length; i++) {
+    //Création d'un écouteur d'événement pour surveiller le panier
+    itemQuantityModification[i].addEventListener("change", (event) => {
+      event.preventDefault(); //On empêche la page de se rafraîchir
+
+      //Sélection de l'élément à modifier en fonction de son id et de sa couleur
+      let itemQuantityModified = basket[i].quantity;
+      let itemQuantityNewValue = itemQuantityModification[i].valueAsNumber;
+
+      //Utilisation de la méthode filter pour vérifier si des changements ont lieu
+      let resultModified = basket.filter(
+        (p) => p.itemQuantityNewValue !== itemQuantityModified
+      );
+      resultModified.quantity = itemQuantityNewValue;
+      basket[i].quantity = resultModified.quantity;
+      saveBasket(basket); // Enregistrement du panier
+
+      location.reload(); // Recharger la page
+      alert("Le contenu de votre panier va être modifié"); //Message adressé au client
+    }); //Fin addEventListener
+  } // Fermeture de la boucle
+} // Fin de la fonction qui modifie la quantité d'articles dans le panier
+
+//SUPPRIMER UN PRODUIT DU PANIER
+
+function removeFromBasket() {
+  //Sélection de l'emplacement du bouton "Supprimer" dans le DOM
+  let deleteItem = document.querySelectorAll(".deleteItem");
+  //Création d'une boucle pour parcourir le panier
+  for (let p = 0; p < deleteItem.length; p++) {
+    //Création d'un écouteur d'événement pour surveiller le panier
+    deleteItem[p].addEventListener("click", (event) => {
+      event.preventDefault(); //On empêche la page de se rafraîchir
+
+      //Sélection de l'élément à supprimer en fonction de son id et de sa couleur
+      let deleteId = basket[p].id;
+      let deleteColor = basket[p].color;
+
+      //Utilisation de la méthode filter pour vérifier si des changements ont lieu
+      basket = basket.filter(
+        (p) => p.id !== deleteId || p.color !== deleteColor
+      );
+      saveBasket(basket); // Enregistrement du panier
+      location.reload(); // Recharger la page
+
+      alert("Votre article va être supprimé."); //Message adressé au client
+    }); // Fin addEventListener
+  } // Fermeture de la boucle
+} // Fin de la fonction qui supprime un élément du panier
+
+// Calculer le nombre de produits qu’il y a dans un panier
+function getNumberProduct() {
+  let basket = getBasket();
+  let number = 0;
+  for (let product of basket) {
+    number += product.quantity;
+  }
+  return number;
+}
+
 //PARCOURIR LE PANIER
 // Création d'une boucle pour parcourir l'array
 for (let item of getBasket()) {
   let itemId = item.id;
   let itemColor = item.color;
   let itemQuantity = item.quantity;
- 
+
   console.log(item);
-
-  //Tri de la commande par type d'article
-  let cartListProducts = [];
-  if (localStorage.getItem("basket") !== null) {
-    cartListProducts = JSON.parse(localStorage.getItem("basket"));
-
-    console.log(basket, "basket");
-
-    cartListProducts.sort(function (a, b) {
-      if (a.id < b.id) {
-        return -1;
-      }
-      if (a.id > b.id) {
-        return 1;
-      }
-      return 0;
-    });
-
-    console.log(cartListProducts.sort());
-  }
-  cartListProducts.sort();
 
   //CREER ET INSERER DES ELEMENTS DANS LA PAGE
   //Récuperation des infos API pour afficher les produits
@@ -159,77 +203,12 @@ for (let item of getBasket()) {
     deleteProduct.innerHTML = "Supprimer";
 
     // MODIFIER LA QUANTITE D'UN PRODUIT DANS LE PANIER
-
-    function changeQuantity() {
-      //Sélection de l'emplacement du bouton "modifier la quantité" dans le DOM
-      let itemQuantityModification = document.querySelectorAll(".itemQuantity");
-      //Création d'une boucle pour parcourir le panier
-      for (let i = 0; i < itemQuantityModification.length; i++) {
-        //Création d'un écouteur d'événement pour surveiller le panier
-        itemQuantityModification[i].addEventListener("change", (event) => {
-          event.preventDefault(); //On empêche la page de se rafraîchir
-
-          //Sélection de l'élément à modifier en fonction de son id et de sa couleur
-          let itemQuantityModified = basket[i].quantity;
-          let itemQuantityNewValue = itemQuantityModification[i].valueAsNumber;
-
-          //Utilisation de la méthode filter pour vérifier si des changements ont lieu
-          let resultModified = basket.filter(
-            (p) => p.itemQuantityNewValue !== itemQuantityModified
-          );
-          resultModified.quantity = itemQuantityNewValue;
-          basket[i].quantity = resultModified.quantity;
-          saveBasket(basket); // Enregistrement du panier
-
-          location.reload(); // Recharger la page
-          alert("Le contenu de votre panier va être modifié"); //Message adressé au client
-        }); //Fin addEventListener
-      } // Fermeture de la boucle
-    } // Fin de la fonction qui modifie la quantité d'articles dans le panier
-
     changeQuantity();
 
     //SUPPRIMER UN PRODUIT DU PANIER
-
-    function removeFromBasket() {
-      //Sélection de l'emplacement du bouton "Supprimer" dans le DOM
-      let deleteItem = document.querySelectorAll(".deleteItem");
-      //Création d'une boucle pour parcourir le panier
-      for (let p = 0; p < deleteItem.length; p++) {
-        //Création d'un écouteur d'événement pour surveiller le panier
-        deleteItem[p].addEventListener("click", (event) => {
-          event.preventDefault(); //On empêche la page de se rafraîchir
-
-          //Sélection de l'élément à supprimer en fonction de son id et de sa couleur
-          let deleteId = basket[p].id;
-          let deleteColor = basket[p].color;
-
-          //Utilisation de la méthode filter pour vérifier si des changements ont lieu
-          basket = basket.filter(
-            (p) => p.id !== deleteId || p.color !== deleteColor
-          );
-          saveBasket(basket); // Enregistrement du panier
-          location.reload(); // Recharger la page
-
-          alert("Votre article va être supprimé."); //Message adressé au client
-        }); // Fin addEventListener
-      } // Fermeture de la boucle
-    } // Fin de la fonction qui supprime un élément du panier
-
     removeFromBasket();
 
     //AFFICHAGE DU NOMBRE TOTAL D'ARTICLES DANS LE PANIER
-
-    // Calculer le nombre de produits qu’il y a dans un panier
-    function getNumberProduct() {
-      let basket = getBasket();
-      let number = 0;
-      for (let product of basket) {
-        number += product.quantity;
-      }
-      return number;
-    }
-
     //Sélection de l'élément dans le DOM
     //Affichage du nombre total d'articles commandés
     let totalItem = document.querySelector("#totalQuantity");
@@ -243,7 +222,6 @@ for (let item of getBasket()) {
   } // Fin de la fonction qui récupere les infos de l'API pour afficher les produits
 
   getResponseApi(itemId).then();
-
 } //Fermeture de la boucle qui parcourt le panier
 
 //VALIDATION DES DONNEES DU FORMULAIRE
@@ -262,13 +240,14 @@ let emailErrorMsg = document.querySelector("#emailErrorMsg");
 
 /*Création d'expressions régulières (regex) pour contrôler la validité des réponses dans le formulaire */
 
-let stringRegex = /^[a-zA-ZÀ-ÿ]*$/;
+let stringRegex = /^( [A-Za-z]{2,20}) ? ( [ -] {0,1} ) ? ( [A-Za-z]{3,20} ) $/;
 
 let addressRegex = /^[0-9]{1,4}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/;
 
 let emailRegex = /^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$/;
 
 // Ecoute d'événements dans les champs du formulaire
+//La méthode test() vérifie s'il y a correspondance entre le texte et le regex et renvoie true ou false
 // Vérification du champ Prénom
 document.querySelector("#firstName").addEventListener("change", () => {
   if (stringRegex.test(firstName.value)) {
@@ -324,19 +303,24 @@ const order = document.getElementById("order");
 order.addEventListener("click", (e) => {
   e.preventDefault(); // On empêche la page de se rafraîchir pour ne pas perdre les données
 
-  //Création d'un contrôle de validité avant envoi au serveur
+  //Contrôle de remplissage du formulaire avant envoi au serveur
 
   if (
     firstName.value == "" ||
+    firstName.value.length < 2 ||
     lastName.value == "" ||
+    lastName.value.length < 2 ||
     address.value == "" ||
+    address.value.length < 6 ||
     city.value == "" ||
+    city.value.length < 2 ||
     email.value == ""
   ) {
     alert("Veuillez remplir tous les champs svp"); // Message pour guider le client
     window.history.back(product.html);
   } else {
-    alert("Votre commande a été enregistrée ! "); // Message pour guider le client
+    //on informe le client que sa commande est ok
+    alert("Votre commande a bien été ajoutée au panier ! ");
   }
 
   // Sélection des éléments du formulaire
@@ -395,7 +379,4 @@ order.addEventListener("click", (e) => {
     .catch((err) => {
       alert("Un problème est survenu: " + err.message);
     });
-
-
 }); //Fin de l'addEventListener
-
