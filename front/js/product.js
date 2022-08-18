@@ -11,7 +11,7 @@ console.log(window.location.href);
 //Récupération des paramètres de l'url
 const recupUrl = window.location.href;
 
-// Le constructeur URL() renvoie un nouvel objet URL représentant l'URL définie par les paramètres 
+// Le constructeur URL() renvoie un nouvel objet URL représentant l'URL définie par les paramètres
 const url = new URL(recupUrl);
 
 //ON RECUPERE L'ID DU PRODUIT A AFFICHER grâce au constructeur URLSearchParams()
@@ -53,7 +53,7 @@ let descriptionItem = document.getElementById("description");
 let colorsItem = document.getElementById("colors");
 
 // Récupération des infos pour chaque canapé différent avec l'id via une fonction async/await
-// Affichage d'une fiche produit pour chaque canapé 
+// Affichage d'une fiche produit pour chaque canapé
 
 async function getArticle(idProduct) {
   const reponseJSON = await fetch(
@@ -78,7 +78,7 @@ async function getArticle(idProduct) {
   }
 }
 
-getArticle(id).then(); // Fin de la fonction qui récupère et affiche les infos du canapé 
+getArticle(id).then(); // Fin de la fonction qui récupère et affiche les infos du canapé
 
 //AJOUTER DES PRODUITS DANS LE PANIER
 
@@ -142,7 +142,5 @@ btnAddToCart.addEventListener("click", (e) => {
 
   addArticle(); // Fin de la fonction qui ajoute les produits au panier
 
-
   window.location.assign("cart.html"); //La méthode location.assign() ouvre la page à l'URL indiquée
-
 }); /////// Fermeture de btnAddToCart.addEventListener

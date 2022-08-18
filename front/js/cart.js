@@ -87,7 +87,7 @@ function removeFromBasket() {
   } // Fermeture de la boucle
 } // Fin de la fonction qui supprime un élément du panier
 
-// Calculer le nombre de produits qu’il y a dans un panier
+// CALCULER LE NOMBRE DE PRODUITS QU'IL Y A DANS UN PANIER
 function getNumberProduct() {
   let basket = getBasket();
   let number = 0;
@@ -219,7 +219,7 @@ for (let item of getBasket()) {
     let totalItemPrice = document.querySelector("#totalPrice");
     totalItemPrice.innerHTML = total;
     console.log(total);
-  } // Fin de la fonction qui récupere les infos de l'API pour afficher les produits
+  } // Fin de la fonction qui récupère les infos de l'API pour afficher les produits
 
   getResponseApi(itemId).then();
 } //Fermeture de la boucle qui parcourt le panier
@@ -240,9 +240,9 @@ let emailErrorMsg = document.querySelector("#emailErrorMsg");
 
 /*Création d'expressions régulières (regex) pour contrôler la validité des réponses dans le formulaire */
 
-let stringRegex = /^( [A-Za-z]{2,20}) ? ( [ -] {0,1} ) ? ( [A-Za-z]{3,20} ) $/;
+let stringRegex = /^[A-Za-z]{2,30}$/;
 
-let addressRegex = /^[0-9]{1,4}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+/;
+let addressRegex = /^[a-z0-9áàâçéèêëîïñóòôöõúùûüæœ\s-]{1,60}$/i;
 
 let emailRegex = /^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$/;
 
@@ -254,7 +254,7 @@ document.querySelector("#firstName").addEventListener("change", () => {
     firstNameErrorMsg.innerHTML = "";
   } else {
     firstNameErrorMsg.innerHTML =
-      "Veuillez entrer votre prénom au bon format svp"; // Message pour guider le client
+      "Veuillez entrer votre prénom svp : il doit faire au moins deux lettres"; // Message pour guider le client
   }
 });
 
@@ -263,7 +263,8 @@ document.querySelector("#lastName").addEventListener("change", () => {
   if (stringRegex.test(lastName.value)) {
     lastNameErrorMsg.innerHTML = "";
   } else {
-    lastNameErrorMsg.innerHTML = "Veuillez entrer votre nom au bon format svp"; // Message pour guider le client
+    lastNameErrorMsg.innerHTML =
+      "Veuillez entrer votre nom svp : il doit faire au moins deux lettres"; // Message pour guider le client
   }
 });
 
@@ -283,7 +284,7 @@ document.querySelector("#city").addEventListener("change", () => {
     cityErrorMsg.innerHTML = "";
   } else {
     cityErrorMsg.innerHTML =
-      "Veuillez entrer le nom de la ville au bon format svp"; // Message pour guider le client
+      "Veuillez entrer le nom de la ville svp : il doit faire au moins deux lettres"; // Message pour guider le client
   }
 });
 
@@ -316,11 +317,11 @@ order.addEventListener("click", (e) => {
     city.value.length < 2 ||
     email.value == ""
   ) {
-    alert("Veuillez remplir tous les champs svp"); // Message pour guider le client
+    alert("Veuillez remplir correctement tous les champs svp"); // Message pour guider le client
     window.history.back(product.html);
   } else {
     //on informe le client que sa commande est ok
-    alert("Votre commande a bien été ajoutée au panier ! ");
+    alert("Tout est ok. Votre commande a été prise en compte ! ");
   }
 
   // Sélection des éléments du formulaire
@@ -340,7 +341,7 @@ order.addEventListener("click", (e) => {
   });
   console.log(idProducts);
 
-  /*Création d'un objet qui contient les valeurs du formulaire + les produits stockés dans localStorage */
+  /*Création d'un objet qui contient les valeurs du formulaire de contact + un tableau des produits stockés dans localStorage */
 
   const order = {
     contact: {
